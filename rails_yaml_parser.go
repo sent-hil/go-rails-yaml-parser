@@ -8,11 +8,13 @@ import (
 )
 
 var (
+	// preset environments
 	Development Env = "Development"
 	Test        Env = "Test"
 	Staging     Env = "Staging"
 	Production  Env = "Production"
 
+	// name of block that'll be used to look for key, if key is not in env.
 	Default = "Defaults"
 
 	ErrKeyNotFound = errors.New("Key not defined for env.")
@@ -41,6 +43,7 @@ type Client struct {
 	} `yaml:"development"`
 }
 
+// New initializes Client after unmarshalling given data arg into yaml.
 func New(data []byte) (*Client, error) {
 	var r Client
 	if err := yaml.Unmarshal([]byte(data), &r); err != nil {
@@ -50,14 +53,9 @@ func New(data []byte) (*Client, error) {
 	return &r, nil
 }
 
-func (r *Client) getKeyFromBlock(block, key string) reflect.Value {
-	// equivalent to r.<block>.<key>
-	f := reflect.Indirect(reflect.ValueOf(r)).FieldByName(block)
-	k := f.FieldByName(key)
-
-	return k
-}
-
+// Get gets given key from set env block. If key is not found in env, it looks
+// in `defaults` blocks. If key doesn't exist there either, it returns
+// ErrKeyNotFound.
 func (r *Client) Get(key string) (string, error) {
 	if fromEnv := r.getKeyFromBlock(string(r.GetEnv()), key); fromEnv.IsValid() {
 		return fromEnv.String(), nil
@@ -70,13 +68,25 @@ func (r *Client) Get(key string) (string, error) {
 	return "", ErrKeyNotFound
 }
 
+// SetEnv sets given env. This should be used to set env based on env vars or
+// user specified env.
 func (r *Client) SetEnv(env Env) {
 	r.env = env
 }
 
+// GetEnv returns current env. If not set, it returns Development.
 func (r *Client) GetEnv() Env {
 	if r.env == "" {
 		return Development
 	}
 	return r.env
+}
+
+// getKeyFromBlock attempts to get given key from give block. Equivalent to
+// `r.<block>.<key>`.
+func (r *Client) getKeyFromBlock(block, key string) reflect.Value {
+	f := reflect.Indirect(reflect.ValueOf(r)).FieldByName(block)
+	k := f.FieldByName(key)
+
+	return k
 }
