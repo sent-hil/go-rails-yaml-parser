@@ -45,6 +45,12 @@ func TestParsingRailsYamlFile(t *testing.T) {
 			_, err := r.Get("random")
 			So(err, ShouldEqual, ErrKeyNotFound)
 		})
+
+		Convey("It falls back on default if key not defined in env", func() {
+			val, err := r.Get("Adapter")
+			So(err, ShouldBeNil)
+			So(val, ShouldEqual, "postgresql")
+		})
 	})
 
 	Convey("SetEnv", t, func() {

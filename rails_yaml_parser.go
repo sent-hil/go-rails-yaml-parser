@@ -13,6 +13,8 @@ var (
 	Staging     Env = "Staging"
 	Production  Env = "Production"
 
+	Default = "Defaults"
+
 	ErrKeyNotFound = errors.New("Key not defined for env.")
 )
 
@@ -48,16 +50,24 @@ func New(data []byte) (*Client, error) {
 	return &r, nil
 }
 
-func (r *Client) Get(key string) (string, error) {
-	// equivalent to r.<env>.<key>
-	f := reflect.Indirect(reflect.ValueOf(r)).FieldByName(string(r.GetEnv()))
+func (r *Client) getKeyFromBlock(block, key string) reflect.Value {
+	// equivalent to r.<block>.<key>
+	f := reflect.Indirect(reflect.ValueOf(r)).FieldByName(block)
 	k := f.FieldByName(key)
 
-	if !k.IsValid() {
-		return "", ErrKeyNotFound
+	return k
+}
+
+func (r *Client) Get(key string) (string, error) {
+	if fromEnv := r.getKeyFromBlock(string(r.GetEnv()), key); fromEnv.IsValid() {
+		return fromEnv.String(), nil
 	}
 
-	return k.String(), nil
+	if fromDefault := r.getKeyFromBlock(Default, key); fromDefault.IsValid() {
+		return fromDefault.String(), nil
+	}
+
+	return "", ErrKeyNotFound
 }
 
 func (r *Client) SetEnv(env Env) {
