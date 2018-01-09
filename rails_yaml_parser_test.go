@@ -58,9 +58,13 @@ func TestParsingRailsYamlFile(t *testing.T) {
 			So(r.GetEnv(), ShouldEqual, Development)
 		})
 
-		Convey("It sets given env", func() {
-			r.SetEnv(Production)
-			So(r.GetEnv(), ShouldEqual, Production)
+		Convey("It returns Test env after Test is set", func() {
+			r.SetEnv(Test)
+			So(r.GetEnv(), ShouldEqual, Test)
+
+			val, err := r.Get("database")
+			So(err, ShouldBeNil)
+			So(val, ShouldEqual, "test")
 		})
 	})
 }
