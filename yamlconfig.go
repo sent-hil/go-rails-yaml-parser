@@ -1,4 +1,4 @@
-package railsyamlparser
+package yamlconfig
 
 import (
 	"errors"

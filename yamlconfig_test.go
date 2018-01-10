@@ -1,4 +1,4 @@
-package railsyamlparser
+package yamlconfig
 
 import (
 	"log"
@@ -28,7 +28,7 @@ test:
  password: test
 `
 
-func TestParsingRailsYamlFile(t *testing.T) {
+func TestParsingYamlFile(t *testing.T) {
 	r, err := New([]byte(exampleFileStr))
 	if err != nil {
 		log.Fatal(err)
