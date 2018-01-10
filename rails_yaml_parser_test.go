@@ -65,6 +65,17 @@ func TestParsingRailsYamlFile(t *testing.T) {
 			val, err := r.Get("database")
 			So(err, ShouldBeNil)
 			So(val, ShouldEqual, "test")
+
+			r.SetEnv(Development) // cleanup
+		})
+	})
+
+	Convey("GetString", t, func() {
+		Convey("It returns string value set for env", func() {
+			val, err := r.GetString("database")
+			So(err, ShouldBeNil)
+			So(val, ShouldEqual, "development")
+			So(val, ShouldHaveSameTypeAs, "")
 		})
 	})
 }

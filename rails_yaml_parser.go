@@ -52,6 +52,16 @@ func (r *Client) Get(key string) (interface{}, error) {
 	return "", ErrKeyNotFound
 }
 
+// GetString gets string value from given key from set env block. Use `Get` for interface return value.
+func (r *Client) GetString(key string) (string, error) {
+	value, err := r.Get(key)
+	if err != nil {
+		return "", err
+	}
+
+	return value.(string), nil
+}
+
 // SetEnv sets given env. This should be used to set env based on env vars or
 // user specified env.
 func (r *Client) SetEnv(env Env) {
