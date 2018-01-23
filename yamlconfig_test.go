@@ -53,6 +53,35 @@ func TestParsingYamlFile(t *testing.T) {
 		})
 	})
 
+	Convey("GetString", t, func() {
+		Convey("It returns string value set for env", func() {
+			val, err := r.GetString("database")
+			So(err, ShouldBeNil)
+			So(val, ShouldEqual, "development")
+			So(val, ShouldHaveSameTypeAs, "")
+		})
+	})
+
+	Convey("MustGet", t, func() {
+		Convey("It returns value set for env", func() {
+			So(r.MustGet("database"), ShouldEqual, "development")
+		})
+
+		Convey("It panics if key is not found", func() {
+			So(func() { r.MustGet("nonexistent") }, ShouldPanic)
+		})
+	})
+
+	Convey("MustGetString", t, func() {
+		Convey("It returns value set for env", func() {
+			So(r.MustGetString("database"), ShouldEqual, "development")
+		})
+
+		Convey("It panics if key is not found", func() {
+			So(func() { r.MustGetString("nonexistent") }, ShouldPanic)
+		})
+	})
+
 	Convey("SetEnv", t, func() {
 		Convey("It returns Development as default if env is not set", func() {
 			So(r.GetEnv(), ShouldEqual, Development)
@@ -67,15 +96,6 @@ func TestParsingYamlFile(t *testing.T) {
 			So(val, ShouldEqual, "test")
 
 			r.SetEnv(Development) // cleanup
-		})
-	})
-
-	Convey("GetString", t, func() {
-		Convey("It returns string value set for env", func() {
-			val, err := r.GetString("database")
-			So(err, ShouldBeNil)
-			So(val, ShouldEqual, "development")
-			So(val, ShouldHaveSameTypeAs, "")
 		})
 	})
 }

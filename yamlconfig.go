@@ -62,6 +62,19 @@ func (r *Client) GetString(key string) (string, error) {
 	return value.(string), nil
 }
 
+func (r *Client) MustGet(key string) interface{} {
+	val, err := r.Get(key)
+	if err != nil {
+		panic(ErrKeyNotFound)
+	}
+
+	return val
+}
+
+func (r *Client) MustGetString(key string) string {
+	return r.MustGet(key).(string)
+}
+
 // SetEnv sets given env. This should be used to set env based on env vars or
 // user specified env.
 func (r *Client) SetEnv(env Env) {
